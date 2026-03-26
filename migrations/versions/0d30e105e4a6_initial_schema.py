@@ -17,24 +17,16 @@ depends_on = None
 
 
 def upgrade():
-    bind = op.get_bind()
-    inspector = sa.inspect(bind)
-
-    if "user" not in inspector.get_table_names():
-        op.create_table(
-            'user',
-            sa.Column('id', sa.Integer(), nullable=False),
-            sa.Column('email', sa.String(length=320), nullable=False),
-            sa.Column('created_on', sa.DateTime(), nullable=True),
-            sa.Column('last_login', sa.DateTime(), nullable=True),
-            sa.PrimaryKeyConstraint('id'),
-            sa.UniqueConstraint('email'),
-        )
+    op.create_table(
+        'user',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('email', sa.String(length=320), nullable=False),
+        sa.Column('created_on', sa.DateTime(), nullable=True),
+        sa.Column('last_login', sa.DateTime(), nullable=True),
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('email'),
+    )
 
 
 def downgrade():
-    bind = op.get_bind()
-    inspector = sa.inspect(bind)
-
-    if "user" in inspector.get_table_names():
-        op.drop_table('user')
+    op.drop_table('user')

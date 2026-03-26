@@ -74,6 +74,8 @@ Apply migrations with:
 uv run flask --app app:create_app db upgrade
 ```
 
+If you have an old local SQLite database from the pre-Alembic version of this app, delete `instance/app.db` and rerun `db upgrade` so Alembic can create and track the schema cleanly.
+
 ## Tests
 
 Run the full test suite with:

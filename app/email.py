@@ -17,6 +17,10 @@ def send_login_link_email(user: User) -> Message:
         html=render_template("email/login.html", user=user, login_url=login_url),
     )
 
-    current_app.logger.info("Magic login link for %s: %s", user.email, login_url)
+    if current_app.config.get("TESTING") or current_app.config.get("MAIL_SUPPRESS_SEND"):
+        current_app.logger.info("Magic login link for %s: %s", user.email, login_url)
+    else:
+        current_app.logger.debug("Magic login link generated for %s", user.email)
+
     mail.send(message)
     return message

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from flask import Blueprint, current_app, flash, redirect, render_template, url_for
+from flask.typing import ResponseReturnValue
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 
@@ -14,7 +15,7 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-def login() -> str:
+def login() -> ResponseReturnValue:
     if current_user.is_authenticated:
         return redirect(url_for("main.secure"))
 
@@ -42,7 +43,7 @@ def login() -> str:
 
 
 @auth_bp.route("/login_token/<token>", methods=["GET", "POST"])
-def login_token(token: str) -> str:
+def login_token(token: str) -> ResponseReturnValue:
     user = User.verify_login_token(token)
     if user is None:
         flash("This login link is invalid or has expired.", "danger")
@@ -66,14 +67,14 @@ def login_token(token: str) -> str:
 
 @auth_bp.post("/logout")
 @login_required
-def logout() -> str:
+def logout() -> ResponseReturnValue:
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("main.index"))
 
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
-def signup() -> str:
+def signup() -> ResponseReturnValue:
     if current_user.is_authenticated:
         return redirect(url_for("main.secure"))
 
@@ -102,6 +103,6 @@ def load_user(user_id: str) -> User | None:
 
 
 @login_manager.unauthorized_handler
-def unauthorized() -> str:
+def unauthorized() -> ResponseReturnValue:
     flash("You must be logged in to view that page.", "warning")
     return redirect(url_for("auth.login"))

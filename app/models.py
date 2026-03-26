@@ -25,7 +25,11 @@ class User(UserMixin, db.Model):
     last_login: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
 
     def get_login_token(self, expires_in: int | None = None) -> str:
-        ttl_seconds = expires_in or current_app.config["TOKEN_TTL_SECONDS"]
+        ttl_seconds = (
+            current_app.config["TOKEN_TTL_SECONDS"]
+            if expires_in is None
+            else expires_in
+        )
         payload = {
             "login_token": self.id,
             "exp": datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds),
