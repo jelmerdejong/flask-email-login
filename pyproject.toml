@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flask-email-login"
+version = "0.1.0"
+description = "A passwordless Flask app that signs users in with emailed magic links."
+readme = "README.md"
+requires-python = ">=3.11,<4"
+license = { text = "MIT" }
+authors = [{ name = "Jelmer de Jong" }]
+dependencies = [
+  "email-validator>=2.2,<3",
+  "Flask>=3.1,<4",
+  "Flask-Login>=0.6.3,<1",
+  "Flask-Mail>=0.10,<1",
+  "Flask-Migrate>=4.1,<5",
+  "Flask-SQLAlchemy>=3.1,<4",
+  "Flask-WTF>=1.2,<2",
+  "gunicorn>=25.2,<26",
+  "psycopg[binary]>=3.2,<4",
+  "PyJWT>=2.10,<3",
+  "python-dotenv>=1.2,<2",
+  "SQLAlchemy>=2.0,<3",
+  "WTForms>=3.2,<4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4,<9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["templates/**/*.html", "templates/**/*.txt"]

@@ -1,13 +1,29 @@
 {% extends 'layout.html' %}
 
-
 {% block content %}
-    <div class="container">
-        <h1>{{title}}</h1>
-        <form method="POST" action="/login">
-          {{ form.csrf_token }}
-        <div>{{ form.email.label }}: {{ form.email(class="css_class") }}</div>
-        <div>{{ form.submit() }}</div>
-</form>
+<section class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-3">{{ title }}</h1>
+        <p class="text-secondary">Enter your email address and we will send a one-time sign-in link.</p>
+        <form method="post" action="{{ url_for('auth.login') }}" class="vstack gap-3">
+          {{ form.hidden_tag() }}
+          <div>
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+            <div class="text-danger small mt-1">
+              {% for error in form.email.errors %}
+              <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {{ form.submit(class="btn btn-primary") }}
+        </form>
+      </div>
     </div>
+  </div>
+</section>
 {% endblock %}

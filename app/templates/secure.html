@@ -1,8 +1,18 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="container">
-        <h1>{{title}}</h1>
-        <p>This page is only visible for secured users</p>
+<section class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-lg-5">
+        <p class="text-uppercase text-muted small mb-2">Protected content</p>
+        <h1 class="h2 mb-3">{{ title }}</h1>
+        <p class="mb-3">This page is only visible to authenticated users.</p>
+        <div class="alert alert-success mb-0" role="alert">
+          Signed in as <strong>{{ email }}</strong>.
+        </div>
+      </div>
     </div>
+  </div>
+</section>
 {% endblock %}

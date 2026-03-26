@@ -1,3 +1,5 @@
-To login click the following link or copy paste the URL in your browser's address bar:
+Use the link below to sign in:
 
-{{ url_for('auth_bp.login_token', token=token, _external=True) }}
+{{ login_url }}
+
+This link expires shortly for security.

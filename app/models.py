@@ -1,40 +1,69 @@
-from time import time
-from flask import current_app
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+
 import jwt
-from . import db
+from flask import current_app
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from jwt import InvalidTokenError
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from .extensions import db
 
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer,
-                   primary_key=True)
-    email = db.Column(db.String(320),
-                      nullable=False,
-                      unique=True)
-    created_on = db.Column(db.DateTime,
-                          index=False,
-                          unique=False,
-                          nullable=True)
-    last_login = db.Column(db.DateTime,
-                           index=False,
-                           unique=False,
-                           nullable=True)
+    __tablename__ = "user"
 
-    def get_login_token(self, expires_in=600):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
+    created_on: Mapped[datetime | None] = mapped_column(
+        DateTime(),
+        default=datetime.utcnow,
+        nullable=True,
+    )
+    last_login: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
+
+    def get_login_token(self, expires_in: int | None = None) -> str:
+        ttl_seconds = (
+            current_app.config["TOKEN_TTL_SECONDS"]
+            if expires_in is None
+            else expires_in
+        )
+        payload = {
+            "login_token": self.id,
+            "exp": datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds),
+        }
         return jwt.encode(
-            {'login_token': self.id, 'exp': time() + expires_in},
-            current_app.config['SECRET_KEY'],
-            algorithm='HS256').decode('utf-8')
+            payload,
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
 
-    @staticmethod
-    def verify_login_token(token):
+    @classmethod
+    def verify_login_token(cls, token: str) -> User | None:
         try:
-            id = jwt.decode(token, current_app.config['SECRET_KEY'],
-                            algorithms=['HS256'])['login_token']
-        except:
-            return
-        return User.query.get(id)
+            payload = jwt.decode(
+                token,
+                current_app.config["SECRET_KEY"],
+                algorithms=["HS256"],
+            )
+        except InvalidTokenError:
+            return None
 
-    def __repr__(self):
-        return '<User {}>'.format(self.email)
+        user_id = payload.get("login_token")
+        if not isinstance(user_id, int):
+            return None
+
+        return db.session.get(cls, user_id)
+
+    @classmethod
+    def find_by_email(cls, email: str) -> User | None:
+        statement = db.select(cls).where(cls.email == email)
+        return db.session.scalar(statement)
+
+    def mark_logged_in(self) -> None:
+        self.last_login = datetime.utcnow()
+
+    def __repr__(self) -> str:
+        return f"<User {self.email}>"

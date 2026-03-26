@@ -1,8 +1,19 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="container">
-        <h1>{{title}}</h1>
-        <p>{{description}}</p>
+<section class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-lg-5">
+        <p class="text-uppercase text-muted small mb-2">Passwordless demo</p>
+        <h1 class="display-6 mb-3">{{ title }}</h1>
+        <p class="lead text-secondary mb-4">{{ description }}</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary" href="{{ url_for('auth.signup') }}">Create an account</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">Request a login link</a>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
 {% endblock %}
