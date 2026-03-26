@@ -99,6 +99,8 @@ celerybeat-schedule
 # Environments
 .env
 .venv
+.uv-cache/
+.uv-python/
 env/
 venv/
 ENV/
